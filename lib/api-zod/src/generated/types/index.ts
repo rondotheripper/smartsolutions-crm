@@ -7,6 +7,10 @@
  */
 
 export * from "./activity";
+export * from "./authorizationSessionHeaderParameter";
+export * from "./authUser";
+export * from "./authUserEnvelope";
+export * from "./beginBrowserLoginParams";
 export * from "./client";
 export * from "./createActivityRequest";
 export * from "./createClientRequest";
@@ -15,13 +19,18 @@ export * from "./createProductRequest";
 export * from "./createProposalRequest";
 export * from "./dashboardStats";
 export * from "./dashboardStatsPipelineSummary";
+export * from "./errorEnvelope";
 export * from "./followup";
+export * from "./handleBrowserLoginCallbackParams";
 export * from "./healthStatus";
 export * from "./listActivitiesParams";
 export * from "./listClientsParams";
 export * from "./listFollowupsParams";
 export * from "./listProductsParams";
 export * from "./listProposalsParams";
+export * from "./logoutSuccess";
+export * from "./mobileTokenExchangeRequest";
+export * from "./mobileTokenExchangeSuccess";
 export * from "./pipelineCard";
 export * from "./pipelineData";
 export * from "./product";

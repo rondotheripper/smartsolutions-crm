@@ -6,10 +6,12 @@ import {
   FileText, Bell, Settings, LogOut, Menu, X 
 } from "lucide-react";
 import { useListFollowups } from "@workspace/api-client-react";
+import { useAuth } from "@workspace/replit-auth-web";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const { user, logout } = useAuth();
 
   const { data: followups } = useListFollowups({ status: "pendente" });
   const pendingCount = followups?.length || 0;
@@ -23,6 +25,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     { href: "/followups", label: "Follow-ups", icon: Bell, badge: pendingCount },
     { href: "/definicoes", label: "Definições", icon: Settings },
   ];
+
+  const displayName = user
+    ? [user.firstName, user.lastName].filter(Boolean).join(" ") || user.email || "Utilizador"
+    : "Utilizador";
+
+  const initials = displayName
+    .split(" ")
+    .map((w) => w[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 
   const SidebarContent = () => (
     <div className="flex h-full flex-col">
@@ -68,14 +81,28 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
       <div className="p-4 border-t border-border/50">
         <div className="flex items-center gap-3 rounded-xl p-3 bg-secondary/50 border border-border/50">
-          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold shadow-inner">
-            JD
-          </div>
+          {user?.profileImageUrl ? (
+            <img
+              src={user.profileImageUrl}
+              alt={displayName}
+              className="h-10 w-10 rounded-full object-cover"
+            />
+          ) : (
+            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold shadow-inner text-sm">
+              {initials}
+            </div>
+          )}
           <div className="flex-1 overflow-hidden">
-            <p className="text-sm font-semibold truncate">João Diretor</p>
-            <p className="text-xs text-muted-foreground truncate">joao@vodafone.pt</p>
+            <p className="text-sm font-semibold truncate">{displayName}</p>
+            {user?.email && (
+              <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+            )}
           </div>
-          <button className="text-muted-foreground hover:text-destructive transition-colors p-1">
+          <button
+            onClick={logout}
+            className="text-muted-foreground hover:text-destructive transition-colors p-1"
+            title="Terminar sessão"
+          >
             <LogOut className="h-4 w-4" />
           </button>
         </div>

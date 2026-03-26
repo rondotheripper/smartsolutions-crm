@@ -34,14 +34,14 @@ export default function Dashboard() {
   if (!stats) return null;
 
   const statCards = [
-    { title: "Total Clientes", value: stats.totalClients, icon: Users, color: "text-blue-500", bg: "bg-blue-500/10" },
-    { title: "Interessados", value: stats.interestedClients, icon: UserCheck, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-    { title: "Não Interessados", value: stats.notInterestedClients, icon: UserX, color: "text-muted-foreground", bg: "bg-muted" },
-    { title: "Follow-ups Pendentes", value: stats.pendingFollowups, icon: Bell, color: "text-amber-500", bg: "bg-amber-500/10" },
-    { title: "Propostas Enviadas", value: stats.proposalsSent, icon: FileText, color: "text-primary", bg: "bg-primary/10" },
-    { title: "Propostas Aceites", value: stats.proposalsAccepted, icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-    { title: "Propostas Recusadas", value: stats.proposalsRejected, icon: XCircle, color: "text-destructive", bg: "bg-destructive/10" },
-    { title: "Valor Potencial", value: formatCurrency(stats.totalPotentialValue), icon: DollarSign, color: "text-violet-500", bg: "bg-violet-500/10" },
+    { title: "Total Clientes", value: stats.totalClients, icon: Users, color: "text-blue-500", bg: "bg-blue-500/10", href: "/clientes" },
+    { title: "Interessados", value: stats.interestedClients, icon: UserCheck, color: "text-emerald-500", bg: "bg-emerald-500/10", href: "/pipeline" },
+    { title: "Não Interessados", value: stats.notInterestedClients, icon: UserX, color: "text-muted-foreground", bg: "bg-muted", href: "/pipeline" },
+    { title: "Follow-ups Pendentes", value: stats.pendingFollowups, icon: Bell, color: "text-amber-500", bg: "bg-amber-500/10", href: "/followups" },
+    { title: "Propostas Enviadas", value: stats.proposalsSent, icon: FileText, color: "text-primary", bg: "bg-primary/10", href: "/propostas" },
+    { title: "Propostas Aceites", value: stats.proposalsAccepted, icon: CheckCircle, color: "text-emerald-500", bg: "bg-emerald-500/10", href: "/propostas" },
+    { title: "Propostas Recusadas", value: stats.proposalsRejected, icon: XCircle, color: "text-destructive", bg: "bg-destructive/10", href: "/propostas" },
+    { title: "Valor Potencial", value: formatCurrency(stats.totalPotentialValue), icon: DollarSign, color: "text-violet-500", bg: "bg-violet-500/10", href: "/propostas" },
   ];
 
   const pipelineData = [
@@ -81,17 +81,19 @@ export default function Dashboard() {
               transition={{ delay: index * 0.05 }}
               key={index}
             >
-              <Card className="glass-panel-hover">
-                <CardContent className="p-6 flex items-center gap-4">
-                  <div className={`p-4 rounded-2xl ${stat.bg}`}>
-                    <stat.icon className={`w-8 h-8 ${stat.color}`} strokeWidth={1.5} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                    <h3 className="text-2xl font-display font-bold mt-1">{stat.value}</h3>
-                  </div>
-                </CardContent>
-              </Card>
+              <Link href={stat.href}>
+                <Card className="glass-panel-hover cursor-pointer group transition-all hover:border-primary/40 hover:shadow-lg hover:shadow-primary/5">
+                  <CardContent className="p-6 flex items-center gap-4">
+                    <div className={`p-4 rounded-2xl ${stat.bg} transition-transform group-hover:scale-110`}>
+                      <stat.icon className={`w-8 h-8 ${stat.color}`} strokeWidth={1.5} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
+                      <h3 className="text-2xl font-display font-bold mt-1">{stat.value}</h3>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
             </motion.div>
           ))}
         </div>
