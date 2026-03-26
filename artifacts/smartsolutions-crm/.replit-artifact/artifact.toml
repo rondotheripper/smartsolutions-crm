@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "SmartSolutions CRM"
+version = "1.0.0"
+id = "artifacts/smartsolutions-crm"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 25455
+
+[services.development]
+run = "pnpm --filter @workspace/smartsolutions-crm run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/smartsolutions-crm", "run", "build" ]
+publicDir = "artifacts/smartsolutions-crm/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "25455"
+BASE_PATH = "/"

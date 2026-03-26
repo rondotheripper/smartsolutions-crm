@@ -1,22 +1,35 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: SmartSolutions CRM API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: clients
+    description: Client management
+  - name: products
+    description: Product catalog
+  - name: proposals
+    description: Proposal management
+  - name: followups
+    description: Follow-up management
+  - name: activities
+    description: Activity log
+  - name: pipeline
+    description: Pipeline management
+  - name: dashboard
+    description: Dashboard statistics
+
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +37,565 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /clients:
+    get:
+      operationId: listClients
+      tags: [clients]
+      summary: List all clients
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: product
+          in: query
+          schema:
+            type: string
+        - name: segment
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of clients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Client"
+    post:
+      operationId: createClient
+      tags: [clients]
+      summary: Create a new client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateClientRequest"
+      responses:
+        "201":
+          description: Client created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+
+  /clients/{id}:
+    get:
+      operationId: getClient
+      tags: [clients]
+      summary: Get a client by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Client found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+        "404":
+          description: Client not found
+    put:
+      operationId: updateClient
+      tags: [clients]
+      summary: Update a client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateClientRequest"
+      responses:
+        "200":
+          description: Client updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+    delete:
+      operationId: deleteClient
+      tags: [clients]
+      summary: Delete a client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Client deleted
+
+  /clients/{id}/activities:
+    get:
+      operationId: getClientActivities
+      tags: [clients]
+      summary: Get activities for a client
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of activities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Activity"
+
+  /products:
+    get:
+      operationId: listProducts
+      tags: [products]
+      summary: List all products
+      parameters:
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: active
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+    post:
+      operationId: createProduct
+      tags: [products]
+      summary: Create a new product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductRequest"
+      responses:
+        "201":
+          description: Product created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /products/{id}:
+    get:
+      operationId: getProduct
+      tags: [products]
+      summary: Get a product by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Product found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+    put:
+      operationId: updateProduct
+      tags: [products]
+      summary: Update a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProductRequest"
+      responses:
+        "200":
+          description: Product updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+
+  /proposals:
+    get:
+      operationId: listProposals
+      tags: [proposals]
+      summary: List all proposals
+      parameters:
+        - name: clientId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of proposals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Proposal"
+    post:
+      operationId: createProposal
+      tags: [proposals]
+      summary: Create a new proposal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProposalRequest"
+      responses:
+        "201":
+          description: Proposal created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Proposal"
+
+  /proposals/{id}:
+    get:
+      operationId: getProposal
+      tags: [proposals]
+      summary: Get a proposal by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Proposal found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Proposal"
+    put:
+      operationId: updateProposal
+      tags: [proposals]
+      summary: Update a proposal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateProposalRequest"
+      responses:
+        "200":
+          description: Proposal updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Proposal"
+    delete:
+      operationId: deleteProposal
+      tags: [proposals]
+      summary: Delete a proposal
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Proposal deleted
+
+  /proposals/{id}/send:
+    post:
+      operationId: sendProposal
+      tags: [proposals]
+      summary: Send a proposal by email
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SendProposalRequest"
+      responses:
+        "200":
+          description: Proposal sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Proposal"
+
+  /followups:
+    get:
+      operationId: listFollowups
+      tags: [followups]
+      summary: List all follow-ups
+      parameters:
+        - name: clientId
+          in: query
+          schema:
+            type: integer
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: date
+          in: query
+          schema:
+            type: string
+        - name: overdue
+          in: query
+          schema:
+            type: boolean
+        - name: today
+          in: query
+          schema:
+            type: boolean
+      responses:
+        "200":
+          description: List of follow-ups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Followup"
+    post:
+      operationId: createFollowup
+      tags: [followups]
+      summary: Create a new follow-up
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateFollowupRequest"
+      responses:
+        "201":
+          description: Follow-up created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Followup"
+
+  /followups/{id}:
+    get:
+      operationId: getFollowup
+      tags: [followups]
+      summary: Get a follow-up by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Follow-up found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Followup"
+    put:
+      operationId: updateFollowup
+      tags: [followups]
+      summary: Update a follow-up
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateFollowupRequest"
+      responses:
+        "200":
+          description: Follow-up updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Followup"
+    delete:
+      operationId: deleteFollowup
+      tags: [followups]
+      summary: Delete a follow-up
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Follow-up deleted
+
+  /followups/{id}/complete:
+    post:
+      operationId: completeFollowup
+      tags: [followups]
+      summary: Mark a follow-up as completed
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Follow-up completed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Followup"
+
+  /pipeline:
+    get:
+      operationId: getPipeline
+      tags: [pipeline]
+      summary: Get pipeline grouped by status
+      responses:
+        "200":
+          description: Pipeline data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PipelineData"
+
+  /pipeline/{clientId}/status:
+    put:
+      operationId: updatePipelineStatus
+      tags: [pipeline]
+      summary: Update a client's pipeline status
+      parameters:
+        - name: clientId
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePipelineStatusRequest"
+      responses:
+        "200":
+          description: Status updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Client"
+
+  /activities:
+    get:
+      operationId: listActivities
+      tags: [activities]
+      summary: List recent activities
+      parameters:
+        - name: clientId
+          in: query
+          schema:
+            type: integer
+        - name: limit
+          in: query
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: List of activities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Activity"
+    post:
+      operationId: createActivity
+      tags: [activities]
+      summary: Create a new activity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateActivityRequest"
+      responses:
+        "201":
+          description: Activity created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Activity"
+
+  /dashboard/stats:
+    get:
+      operationId: getDashboardStats
+      tags: [dashboard]
+      summary: Get dashboard statistics
+      responses:
+        "200":
+          description: Dashboard stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DashboardStats"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +606,656 @@ components:
       required:
         - status
 
+    Client:
+      type: object
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        companyName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        taxId:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        segment:
+          type: string
+        leadSource:
+          type: string
+        interestedProduct:
+          type: string
+        pipelineStatus:
+          type: string
+        lastCallDate:
+          type: string
+          nullable: true
+        nextFollowupDate:
+          type: string
+          nullable: true
+        ownerName:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - fullName
+        - companyName
+        - email
+        - phone
+        - segment
+        - leadSource
+        - interestedProduct
+        - pipelineStatus
+        - ownerName
+        - createdAt
+        - updatedAt
+
+    CreateClientRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+        companyName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        taxId:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        segment:
+          type: string
+        leadSource:
+          type: string
+        interestedProduct:
+          type: string
+        pipelineStatus:
+          type: string
+        lastCallDate:
+          type: string
+          nullable: true
+        nextFollowupDate:
+          type: string
+          nullable: true
+        ownerName:
+          type: string
+        notes:
+          type: string
+          nullable: true
+      required:
+        - fullName
+        - companyName
+        - email
+        - phone
+        - segment
+        - leadSource
+        - interestedProduct
+        - pipelineStatus
+        - ownerName
+
+    UpdateClientRequest:
+      type: object
+      properties:
+        fullName:
+          type: string
+        companyName:
+          type: string
+        email:
+          type: string
+        phone:
+          type: string
+        taxId:
+          type: string
+          nullable: true
+        address:
+          type: string
+          nullable: true
+        segment:
+          type: string
+        leadSource:
+          type: string
+        interestedProduct:
+          type: string
+        pipelineStatus:
+          type: string
+        lastCallDate:
+          type: string
+          nullable: true
+        nextFollowupDate:
+          type: string
+          nullable: true
+        ownerName:
+          type: string
+        notes:
+          type: string
+          nullable: true
+
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        category:
+          type: string
+        shortDescription:
+          type: string
+        fullDescription:
+          type: string
+        benefits:
+          type: string
+        objections:
+          type: string
+        salesArguments:
+          type: string
+        price:
+          type: string
+          nullable: true
+        pricingType:
+          type: string
+        attachmentUrl:
+          type: string
+          nullable: true
+        proposalTemplate:
+          type: string
+          nullable: true
+        active:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+      required:
+        - id
+        - name
+        - category
+        - shortDescription
+        - fullDescription
+        - benefits
+        - objections
+        - salesArguments
+        - pricingType
+        - active
+        - createdAt
+        - updatedAt
+
+    CreateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        shortDescription:
+          type: string
+        fullDescription:
+          type: string
+        benefits:
+          type: string
+        objections:
+          type: string
+        salesArguments:
+          type: string
+        price:
+          type: string
+          nullable: true
+        pricingType:
+          type: string
+        attachmentUrl:
+          type: string
+          nullable: true
+        proposalTemplate:
+          type: string
+          nullable: true
+        active:
+          type: boolean
+      required:
+        - name
+        - category
+        - shortDescription
+        - fullDescription
+        - benefits
+        - objections
+        - salesArguments
+        - pricingType
+        - active
+
+    UpdateProductRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        shortDescription:
+          type: string
+        fullDescription:
+          type: string
+        benefits:
+          type: string
+        objections:
+          type: string
+        salesArguments:
+          type: string
+        price:
+          type: string
+          nullable: true
+        pricingType:
+          type: string
+        attachmentUrl:
+          type: string
+          nullable: true
+        proposalTemplate:
+          type: string
+          nullable: true
+        active:
+          type: boolean
+
+    Proposal:
+      type: object
+      properties:
+        id:
+          type: integer
+        proposalNumber:
+          type: string
+        clientId:
+          type: integer
+        productId:
+          type: integer
+          nullable: true
+        clientEmail:
+          type: string
+        amount:
+          type: string
+          nullable: true
+        status:
+          type: string
+        createdAt:
+          type: string
+        sentAt:
+          type: string
+          nullable: true
+        validUntil:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        attachmentUrl:
+          type: string
+          nullable: true
+        ownerName:
+          type: string
+        updatedAt:
+          type: string
+        clientName:
+          type: string
+          nullable: true
+        companyName:
+          type: string
+          nullable: true
+        productName:
+          type: string
+          nullable: true
+      required:
+        - id
+        - proposalNumber
+        - clientId
+        - clientEmail
+        - status
+        - createdAt
+        - ownerName
+        - updatedAt
+
+    CreateProposalRequest:
+      type: object
+      properties:
+        clientId:
+          type: integer
+        productId:
+          type: integer
+          nullable: true
+        clientEmail:
+          type: string
+        amount:
+          type: string
+          nullable: true
+        status:
+          type: string
+        validUntil:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        ownerName:
+          type: string
+      required:
+        - clientId
+        - clientEmail
+        - status
+        - ownerName
+
+    UpdateProposalRequest:
+      type: object
+      properties:
+        clientId:
+          type: integer
+        productId:
+          type: integer
+          nullable: true
+        clientEmail:
+          type: string
+        amount:
+          type: string
+          nullable: true
+        status:
+          type: string
+        validUntil:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+        ownerName:
+          type: string
+        attachmentUrl:
+          type: string
+          nullable: true
+
+    SendProposalRequest:
+      type: object
+      properties:
+        subject:
+          type: string
+        message:
+          type: string
+      required:
+        - subject
+        - message
+
+    Followup:
+      type: object
+      properties:
+        id:
+          type: integer
+        clientId:
+          type: integer
+        scheduledAt:
+          type: string
+        reason:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        priority:
+          type: string
+        status:
+          type: string
+        sendEmailAlert:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+        clientName:
+          type: string
+          nullable: true
+        companyName:
+          type: string
+          nullable: true
+      required:
+        - id
+        - clientId
+        - scheduledAt
+        - reason
+        - priority
+        - status
+        - sendEmailAlert
+        - createdAt
+        - updatedAt
+
+    CreateFollowupRequest:
+      type: object
+      properties:
+        clientId:
+          type: integer
+        scheduledAt:
+          type: string
+        reason:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        priority:
+          type: string
+        sendEmailAlert:
+          type: boolean
+      required:
+        - clientId
+        - scheduledAt
+        - reason
+        - priority
+        - sendEmailAlert
+
+    UpdateFollowupRequest:
+      type: object
+      properties:
+        clientId:
+          type: integer
+        scheduledAt:
+          type: string
+        reason:
+          type: string
+        notes:
+          type: string
+          nullable: true
+        priority:
+          type: string
+        status:
+          type: string
+        sendEmailAlert:
+          type: boolean
+
+    Activity:
+      type: object
+      properties:
+        id:
+          type: integer
+        clientId:
+          type: integer
+          nullable: true
+        type:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+        createdBy:
+          type: string
+        clientName:
+          type: string
+          nullable: true
+        companyName:
+          type: string
+          nullable: true
+      required:
+        - id
+        - type
+        - description
+        - createdAt
+        - createdBy
+
+    CreateActivityRequest:
+      type: object
+      properties:
+        clientId:
+          type: integer
+          nullable: true
+        type:
+          type: string
+        description:
+          type: string
+        createdBy:
+          type: string
+      required:
+        - type
+        - description
+        - createdBy
+
+    PipelineCard:
+      type: object
+      properties:
+        id:
+          type: integer
+        fullName:
+          type: string
+        companyName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        interestedProduct:
+          type: string
+        pipelineStatus:
+          type: string
+        nextFollowupDate:
+          type: string
+          nullable: true
+        notes:
+          type: string
+          nullable: true
+      required:
+        - id
+        - fullName
+        - companyName
+        - phone
+        - email
+        - interestedProduct
+        - pipelineStatus
+
+    PipelineData:
+      type: object
+      properties:
+        chamadaEfectuada:
+          type: array
+          items:
+            $ref: "#/components/schemas/PipelineCard"
+        clienteNaoInteressado:
+          type: array
+          items:
+            $ref: "#/components/schemas/PipelineCard"
+        clienteInteressado:
+          type: array
+          items:
+            $ref: "#/components/schemas/PipelineCard"
+        chamadaFollowup:
+          type: array
+          items:
+            $ref: "#/components/schemas/PipelineCard"
+      required:
+        - chamadaEfectuada
+        - clienteNaoInteressado
+        - clienteInteressado
+        - chamadaFollowup
+
+    UpdatePipelineStatusRequest:
+      type: object
+      properties:
+        pipelineStatus:
+          type: string
+        nextFollowupDate:
+          type: string
+          nullable: true
+      required:
+        - pipelineStatus
+
+    DashboardStats:
+      type: object
+      properties:
+        totalClients:
+          type: integer
+        interestedClients:
+          type: integer
+        notInterestedClients:
+          type: integer
+        pendingFollowups:
+          type: integer
+        overdueFollowups:
+          type: integer
+        todayFollowups:
+          type: integer
+        proposalsSent:
+          type: integer
+        proposalsAccepted:
+          type: integer
+        proposalsRejected:
+          type: integer
+        totalPotentialValue:
+          type: string
+        pipelineSummary:
+          type: object
+          properties:
+            chamadaEfectuada:
+              type: integer
+            clienteNaoInteressado:
+              type: integer
+            clienteInteressado:
+              type: integer
+            chamadaFollowup:
+              type: integer
+          required:
+            - chamadaEfectuada
+            - clienteNaoInteressado
+            - clienteInteressado
+            - chamadaFollowup
+        recentProposals:
+          type: array
+          items:
+            $ref: "#/components/schemas/Proposal"
+        upcomingFollowups:
+          type: array
+          items:
+            $ref: "#/components/schemas/Followup"
+        recentActivities:
+          type: array
+          items:
+            $ref: "#/components/schemas/Activity"
+        recentClients:
+          type: array
+          items:
+            $ref: "#/components/schemas/Client"
+      required:
+        - totalClients
+        - interestedClients
+        - notInterestedClients
+        - pendingFollowups
+        - overdueFollowups
+        - todayFollowups
+        - proposalsSent
+        - proposalsAccepted
+        - proposalsRejected
+        - totalPotentialValue
+        - pipelineSummary
+        - recentProposals
+        - upcomingFollowups
+        - recentActivities
+        - recentClients

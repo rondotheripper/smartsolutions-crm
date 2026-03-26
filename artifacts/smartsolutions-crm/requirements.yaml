@@ -1,0 +1,16 @@
+packages:
+  "framer-motion": "For premium page transitions and micro-interactions"
+  "recharts": "For the dashboard pipeline summary chart"
+  "@hello-pangea/dnd": "For the drag-and-drop Kanban pipeline board"
+  "date-fns": "For formatting dates cleanly"
+  "clsx": "For conditional tailwind classes"
+  "tailwind-merge": "For conditional tailwind classes"
+
+images:
+  - path: "artifacts/smartsolutions-crm/public/images/auth-bg.png"
+    description: "Abstract dark red and black geometric corporate background, clean and premium"
+    aspect_ratio: "16:9"
+
+notes:
+  - "App defaults to dark mode natively"
+  - "Using orval generated hooks from @workspace/api-client-react for data fetching"
