@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useListFollowups, useCompleteFollowup, useListClients, useCreateFollowup } from "@workspace/api-client-react";
+import { useListFollowups, useCompleteFollowup, useDeleteFollowup, useListClients, useCreateFollowup } from "@workspace/api-client-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Button, Card, Badge, Modal, Select, Input } from "@/components/ui/core";
-import { Check, Calendar, Plus, Clock, AlertCircle } from "lucide-react";
+import { Check, Calendar, Plus, Clock, AlertCircle, Trash2 } from "lucide-react";
 import { format, isPast, isToday } from "date-fns";
 import { pt } from "date-fns/locale";
 import { useQueryClient } from "@tanstack/react-query";
@@ -14,6 +14,12 @@ export default function Followups() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const completeMutation = useCompleteFollowup({
+    mutation: {
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/followups"] })
+    }
+  });
+
+  const deleteMutation = useDeleteFollowup({
     mutation: {
       onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/followups"] })
     }
@@ -82,8 +88,13 @@ export default function Followups() {
                   </div>
                 </div>
                 <div className="p-4 border-t border-border/50 bg-secondary/20 flex justify-end gap-2">
-                  <Button size="sm" variant="secondary" className="w-full">Reagendar</Button>
-                  <Button size="sm" variant="outline" className="w-full hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500" onClick={() => completeMutation.mutate({ id: f.id })}>
+                  <Button size="sm" variant="ghost" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => {
+                    if (confirm("Tem a certeza que deseja apagar este follow-up?")) deleteMutation.mutate({ id: f.id });
+                  }}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                  <Button size="sm" variant="secondary" className="flex-1">Reagendar</Button>
+                  <Button size="sm" variant="outline" className="flex-1 hover:bg-emerald-500/10 hover:text-emerald-500 hover:border-emerald-500" onClick={() => completeMutation.mutate({ id: f.id })}>
                     <Check className="w-4 h-4 mr-1.5" /> Concluir
                   </Button>
                 </div>

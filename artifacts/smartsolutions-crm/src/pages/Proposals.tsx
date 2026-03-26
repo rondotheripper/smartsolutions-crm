@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { useListProposals, useCreateProposal, useSendProposal, useListClients } from "@workspace/api-client-react";
+import { useListProposals, useCreateProposal, useSendProposal, useDeleteProposal, useListClients } from "@workspace/api-client-react";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { Card, Button, Input, Select, Badge, Modal } from "@/components/ui/core";
-import { Plus, Search, FileText, Send, MoreVertical, Calendar } from "lucide-react";
+import { Plus, Search, FileText, Send, Trash2, Calendar } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
@@ -31,6 +31,12 @@ export default function Proposals() {
         queryClient.invalidateQueries({ queryKey: ["/api/proposals"] });
         setIsSendModalOpen(false);
       }
+    }
+  });
+
+  const deleteMutation = useDeleteProposal({
+    mutation: {
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/proposals"] })
     }
   });
 
@@ -125,7 +131,11 @@ export default function Proposals() {
                               <Send className="w-3.5 h-3.5 mr-1.5" /> Enviar
                             </Button>
                           )}
-                          <Button size="icon" variant="ghost" className="h-9 w-9"><MoreVertical className="w-4 h-4" /></Button>
+                          <Button size="icon" variant="ghost" className="h-9 w-9 text-destructive hover:text-destructive hover:bg-destructive/10" onClick={() => {
+                            if (confirm("Tem a certeza que deseja apagar esta proposta?")) deleteMutation.mutate({ id: proposal.id });
+                          }}>
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
                         </div>
                       </td>
                     </tr>
