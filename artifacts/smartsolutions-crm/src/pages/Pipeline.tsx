@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
-import { useGetPipeline, useUpdatePipelineStatus, useListClients } from "@workspace/api-client-react";
+import { useGetPipeline, useUpdatePipelineStatus, useDeleteClient } from "@workspace/api-client-react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { Phone, Mail, Calendar, Building, Building2, MoreHorizontal } from "lucide-react";
+import { Phone, Calendar, Building2, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 import { useQueryClient } from "@tanstack/react-query";
@@ -21,6 +21,16 @@ export default function Pipeline() {
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["/api/pipeline"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
+      }
+    }
+  });
+
+  const deleteMutation = useDeleteClient({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["/api/pipeline"] });
+        queryClient.invalidateQueries({ queryKey: ["/api/clients"] });
         queryClient.invalidateQueries({ queryKey: ["/api/dashboard/stats"] });
       }
     }
@@ -106,8 +116,16 @@ export default function Pipeline() {
                                 >
                                   <div className="flex justify-between items-start mb-2">
                                     <h4 className="font-bold text-sm leading-tight text-foreground">{item.fullName}</h4>
-                                    <button className="text-muted-foreground hover:text-foreground shrink-0 ml-2">
-                                      <MoreHorizontal className="w-4 h-4" />
+                                    <button
+                                      className="text-muted-foreground hover:text-destructive shrink-0 ml-2 transition-colors"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (confirm(`Apagar "${item.fullName}"? Esta ação é irreversível.`)) {
+                                          deleteMutation.mutate({ id: item.id });
+                                        }
+                                      }}
+                                    >
+                                      <Trash2 className="w-3.5 h-3.5" />
                                     </button>
                                   </div>
                                   
