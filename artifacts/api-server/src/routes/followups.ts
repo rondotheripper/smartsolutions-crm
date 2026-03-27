@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { followupsTable, clientsTable, activitiesTable } from "@workspace/db/schema";
 import { eq, and } from "drizzle-orm";
+import { sendFollowupNotification } from "../lib/email";
 
 const router: IRouter = Router();
 
@@ -70,6 +71,15 @@ router.post("/followups", async (req, res) => {
     await db.update(clientsTable)
       .set({ nextFollowupDate: followup.scheduledAt, updatedAt: new Date() })
       .where(eq(clientsTable.id, followup.clientId));
+
+    // Send email notification (non-blocking)
+    sendFollowupNotification({
+      clientName: client?.fullName ?? "Desconhecido",
+      companyName: client?.companyName ?? "—",
+      scheduledAt: followup.scheduledAt,
+      reason: followup.reason,
+      priority: followup.priority,
+    });
 
     res.status(201).json({
       ...followup,

@@ -120,10 +120,6 @@ export default function Catalog() {
                       <p className="text-xs text-muted-foreground text-right mt-1">Modelo: {product.pricingType}</p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 mt-4">
-                      <Button variant="secondary" className="w-full">Detalhes</Button>
-                      <Button variant="outline" className="w-full">Criar Proposta</Button>
-                    </div>
                   </CardContent>
                 </Card>
               );

@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable, DropResult } from "@hello-pangea/dnd";
 import { useGetPipeline, useUpdatePipelineStatus, useDeleteClient } from "@workspace/api-client-react";
 import { AppLayout } from "@/components/layout/AppLayout";
-import { Phone, Calendar, Building2, Trash2 } from "lucide-react";
+import { Phone, Calendar, Building2, Trash2, ExternalLink } from "lucide-react";
 import { format } from "date-fns";
 import { pt } from "date-fns/locale";
 import { useQueryClient } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 
 const COLUMNS = [
   { id: "chamada_efectuada", title: "Chamada Efectuada", color: "border-blue-500/50", headerColor: "text-blue-400" },
@@ -35,6 +36,7 @@ type LocalPipeline = {
 
 export default function Pipeline() {
   const queryClient = useQueryClient();
+  const [, navigate] = useLocation();
   const { data: pipelineData, isLoading } = useGetPipeline();
 
   // Local state is the source of truth for the board — enables instant drag
@@ -192,18 +194,31 @@ export default function Pipeline() {
                                           <span className="text-xs text-muted-foreground truncate">{item.companyName}</span>
                                         </div>
                                       </div>
-                                      <button
-                                        className="ml-2 p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
-                                        onMouseDown={(e) => e.stopPropagation()}
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          if (confirm(`Apagar "${item.fullName}"? Esta ação é irreversível.`)) {
-                                            deleteMutation.mutate({ id: item.id });
-                                          }
-                                        }}
-                                      >
-                                        <Trash2 className="w-3.5 h-3.5" />
-                                      </button>
+                                      <div className="flex items-center gap-1 ml-2 shrink-0">
+                                        <button
+                                          className="p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                                          onMouseDown={(e) => e.stopPropagation()}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate(`/clientes?view=${item.id}`);
+                                          }}
+                                          title="Ver ficha do cliente"
+                                        >
+                                          <ExternalLink className="w-3.5 h-3.5" />
+                                        </button>
+                                        <button
+                                          className="p-1 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                                          onMouseDown={(e) => e.stopPropagation()}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            if (confirm(`Apagar "${item.fullName}"? Esta ação é irreversível.`)) {
+                                              deleteMutation.mutate({ id: item.id });
+                                            }
+                                          }}
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      </div>
                                     </div>
 
                                     <div className="space-y-1.5 text-xs text-muted-foreground">
