@@ -37,7 +37,8 @@ export async function sendFollowupNotification(opts: {
   });
 
   try {
-    await resend.emails.send({
+    console.log(`[email] Sending follow-up notification to ${NOTIFICATION_EMAIL} for client: ${opts.clientName}`);
+    const response = await resend.emails.send({
       from: FROM_EMAIL,
       to: NOTIFICATION_EMAIL,
       subject: `Follow-up agendado: ${opts.clientName} — ${formattedDate}`,
@@ -77,6 +78,7 @@ export async function sendFollowupNotification(opts: {
         </div>
       `,
     });
+    console.log("[email] Resend response:", JSON.stringify(response));
   } catch (err) {
     console.error("[email] Failed to send follow-up notification:", err);
   }
