@@ -144,3 +144,33 @@ function App() {
 }
 
 export default App;
+import React, { useState } from "react";
+import Register from "./pages/Register"; // ajusta o caminho
+import Login from "./pages/Login";       // ajusta o caminho
+import AppLayout from "./components/layout/AppLayout"; // teu layout existente
+
+export default function App() {
+  const [isLogin, setIsLogin] = useState(true);
+
+  // se estiver autenticado, mostra o layout principal
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    return (
+      <>
+        {isLogin ? <Login /> : <Register />}
+        <div className="text-center mt-4">
+          <button
+            onClick={() => setIsLogin(!isLogin)}
+            className="underline text-sm text-primary"
+          >
+            {isLogin ? "Criar Conta" : "Voltar ao Login"}
+          </button>
+        </div>
+      </>
+    );
+  }
+
+  // se tiver token, mostra o layout principal da app
+  return <AppLayout />;
+}
